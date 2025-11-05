@@ -1,0 +1,17 @@
+# Numpy notes
+
+## Import Numpy
+
+import numpy
+    use function, modules, classes
+
+
+    Libreary
+        modules
+            classes
+                functions
+
+
+import numpy as np
+
+ndarray   ->  N-Dimentional array

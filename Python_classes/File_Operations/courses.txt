@@ -1,0 +1,8 @@
+Python
+PowerBi
+Excel
+SQL
+Pandas
+Tableau
+Machine Learning
+Deep Learning

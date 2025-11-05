@@ -1,0 +1,119 @@
+File name: temperature.py
+Module name: temperature
+
+# Import a Module
+import <module_name>
+Import temperature
+
+# Import module with an alias name
+import <module_name> as <alias_name
+import temperature as t
+
+
+# Using functions from the imported module_name
+module_name.function_name([args])
+
+#help(temperature) -> in terminal to see the documentation for the module
+
+
+# Exception Handling
+- Syntactical errors
+    Grammatical errors
+- Usage errors: End user causes these errors
+
+Whenever there is an exception the application fails. 
+
+#try construct syntax
+
+try: 
+    statment(s) # code you want to run/execute
+except:
+    statement(s)
+
+
+----------- Exception Hierarchy --------------
+
+Exception                           # Parent of all exceptions (default, no need to mention in the except block)
+    OSError                         # OS related errors
+        FileExistsError
+        FileNotFoundError
+    ValueError
+
+Note: While handling errors, handle from specific to general
+
+
+# multiple exception classes
+# Syntax
+try: 
+    statment(s) # code you want to run/execute
+except [ExceptionType] [as e]:
+    statement(s)
+[except [ExceptionType] [as e]:
+    statement(s)]...
+
+- The code inside the final clause always executes
+
+- Use exit() function from sys module when you want to end the execution
+
+Rising an error using 'raise' statement:
+raise ErrorName('message')
+
+
+---------Working with files-----------
+
+File is an object.
+Two types of files:
+    - Text
+        Sequence of characters and lines
+        At the end of each line there is a new line (\n) character
+        .txt, .html, .csv, .json, .xml etc,.
+
+    - Binary
+        Sequence of bytes
+        .exe, .msi, .compressed, .image, .audio, .video etc,.
+
+--------Working with TEXT files-------
+File operations:
+1. open
+2. read from the file or write to the file
+3. close
+
+# 1. open a file - takes two arguments
+open(filename, mode)
+
+- filename (may include path of the file)
+- mode: read, write, append, binary, etc        # should specify the mode of operation
+    - When you open a file with a specific mode, open function creates a fileObject which is assign to a variable to work with the file. 
+
+=> mode
+    1. r (read)     # default - no need to mention explicitly 
+        - this mode returns an exception when a file does not exists. 
+    2. w (write)
+        - This mode creates a file if it doesn't exists. 
+        - CAUTION: This mode truncates a file (erases data from the existing file.)
+    3. a (append)
+        - This mode creates a file if it doesn't exists. 
+        - If the file already exists then it will append the data to the file. 
+    4. b (binary)
+        - 'rb' for reading binary files
+        - 'wb' for writing to binary files
+
+
+### The 'with' statement in Python
+Using with statement in Python we can close a file automatically without explicitly using the close() method.
+
+### Referencing a file:
+1. Absolute reference
+    D:\\Office\\Projects\\2025\\Zeneta\\Docs\\file.txt
+2. Relative reference
+    file.txt      --------->     file in the same folder
+    ./file.txt    --------->     file in the same folder
+    ../file.txt   --------->     file in the parent folder
+
+
+### Reading data from a file using three methods
+1. read()
+    - Reads the entire file as one single string. 
+2. readline()
+    - Reads one line at a time
+        where each line of a list 
