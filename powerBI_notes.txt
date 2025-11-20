@@ -1,0 +1,46 @@
+DAX - Data Analysis eXpression
+    DAX Expressions------ Calculated Columns
+                    |
+                    |---- Measures
+
+Syntax for DAX:
+        Name = Formula
+
+Name => An Object
+        Table, Column, Measure
+
+Referring objects in the DAX Expression:
+        Table: 
+                TableName (Should have no spaces)
+        Column: 
+                [ColumnName]
+                TableName[ColumnName]
+        Measure: 
+                [Measure]
+
+CALENDAR Table
+        Time-Intelligence Calculations
+
+CALENDAR function:
+-------------------
+CALENDAR( start_date, end_date )
+    -> returns start_date to end_date, including start and end dates. 
+
+start_date: Jan 1, XXXX (business_start_year, ex: 2017)
+end_date: Dec 32, XXXX (current_year_end ex: 2025)
+
+DATE function:
+----------------
+DATE(year, month, day)
+    -> returns date for the specified values
+
+CALENDAR( DATE(), DATE() )
+
+CALENDAR( DATE(2017, 1, 1), DATE(2019, 12, 31) )
+
+Name = Formula
+
+DateTable = Formula
+Calendar = Formula
+
+Calendar = CALENDAR( DATE(2017, 1, 1), DATE(2019, 12, 31) )
