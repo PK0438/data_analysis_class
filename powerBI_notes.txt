@@ -43,4 +43,161 @@ Name = Formula
 DateTable = Formula
 Calendar = Formula
 
-Calendar = CALENDAR( DATE(2017, 1, 1), DATE(2019, 12, 31) )
+Calendar = CALENDAR( 
+                DATE(2017, 1, 1), 
+                DATE(2019, 12, 31) 
+                )
+
+
+DATE: Nov 19, 2025
+        Year: 2025
+        Month: November
+        Day: 19
+        MonthNum: 11
+        Weekday: Wednesday
+        WeekdayNum: 4
+        WeekNum: 49 (from 1 to 53)
+        etc.,
+
+CALCULATED COLUMNS
+-------------------
+-> Creating Month column with Month names
+-> Have to format the  date (01-01-2017) to get the Month number using FORMAT function
+
+Syntax: 
+        FORMAT(value, format_code)                         
+
+FORMAT function will take two parameters
+        -> value: number, date, time, datetime
+        -> format_code:
+                YY:     two-diit year number (25)
+                YYYY:   four-digit year number (2025)
+                M:      Month number (1-12)
+                MM:     Month number with leading zero (01 - 12)
+                MMM:    Short month name (Jan - Dec)
+                MMMM:   Full month name (January - December)
+                D:      Day number (1- 13)   
+                DD:     Day number with leading zero (01 - 31)
+                DDD:    Short week day name (Sun - Sat)
+                DDDD:   Full Week day name (Sunday - Saturday)
+
+-> calculated column for month column formula should be
+
+                Month = FORMAT( [DATE], "MMMM" )
+
+
+'Year' column with year numbers
+--------------------------------
+
+Syntax: 
+        YEAR(date)
+                -> Returns year number from the date value
+
+-> Calculated column from Year column formula should be
+        
+        Year = YEAR([Date])
+
+-> Convert the Year column data type format as text because, we don't need to performa any arithemetic operations on it. 
+
+
+'MonthNum' column with month numbers
+-------------------------------------
+
+Syntax: 
+        MONTH( Date )
+                -> Returns month number (1-12) from thre date values
+
+-> Calculated column from MonthNum column formula should be
+
+        MonthNum = Month( [Date] )
+
+-> Should not change the data type of the MonthNum column to text. Because if you change, it will sort the month numbers based on the first character, which is wrong. 
+
+Text sorting                            Number sorting
+1                                       1
+10                                      2
+11                                      3
+12                                      4
+2                                       5
+3                                       6
+4                                       7
+5                                       8
+6                                       9
+7                                       10
+8                                       11
+9                                       12
+
+-> So in column tools -> Summarization -> Don't summarize
+        -> which means no operations should be perform on this column
+
+
+'WeekNum' Column with week numbers
+-------------------------------------
+-> There is a seperate function to calclate the week number. it's not there in the format_code
+
+Syntax:
+        WEEKNUM( [Date] )
+                -> Returns week number (1-53) from the date value. 
+
+-> Calculated column from WeekNum column formula should be
+
+        WeekNum = WEEKNUM( [Date] )
+
+
+'Weekday' column with weekday names
+------------------------------------
+
+        Weekday = FORMAT( [Date], "DDDD" )
+
+
+'WeekdayNum' column with weekday number
+----------------------------------------
+-> If we give Date as a param to the WEEKDAY function it will give 1 for Sunday, 2 for Monday and so on, 7 for Saturday. 
+-> It is dependent on Weekday column
+
+        WeekdayNum = WEEKDAY( [Date] )
+
+-> TO start the weekdayNum to start with Monday, which means 1 for Monday, 2 for Tuesday and so on, 7 for Sunday
+
+        WeekdayNum = WEEKDAY( [Date], 2)
+                        -> Have to pass an another argument which weekday number to start with. 
+                        -> 1 - Sunday, 2 - Monday, 3 - Tuesday, 4 - Wednesday, 5 - Thursday, 6 - Friday, 7 - Saturday
+
+
+'IsWorkDay' column as 1 for workday, 0 for Weekend
+----------------------------------------------------
+-> Mon - Fri (weekdays) - 1
+-> Sat & Sun (weekends) - 0
+-> It is dependent on weekday column
+
+-> We have to use IF condition in this case
+
+Syntax:        
+        IF ( condition, if_true, if_false )
+                -> IF condition will take 3 arguments, condition, if_true and if_false
+                -> if the condition is true it will go with the second argument
+                -> if the condition is false it will go with the third argument
+
+-> Calculated column from IsWorkDay column formula should be
+
+       isWorkday =  IF( [WeekdayNum] <= 5, 1, 0 )
+
+
+
+
+Power BI report
+---------------
+
+-> If the date type is number and summarization is sum by default report will take Clusterd Column Chart
+-> If the date type is text and summarization is don't summarize by default report will take Clusterd Column Chart
+
+Chart 1
+-------
+-> Clustered column chart
+        -> Y axis: IsWorkday 
+        -> X Axis: Month
+
+-> Months will not be in the order, to make Months column in order, 
+        -> Go to the 3 dots (options) at the top or bottom of the chart, choose sort axis -> month
+        -> Go to the same options sort axis -> sort ascending
+        -> click Month column in Data pane, go to Column tools, sort by column -> MonthNum
