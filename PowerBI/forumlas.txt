@@ -1,0 +1,46 @@
+CALCULATED COLUMNS:
+-------------------
+TotalBillableHours =
+SUMX(
+	FILTER(
+		ALL('Hours'),
+		[Category] = "Billable" && [EmployeeID] = EARLIER([EmployeeID])
+	),
+	[Hours]
+)
+
+
+TotalHours =
+SUMX(
+	FILTER(
+		ALL('Hours'),
+		[EmployeeID] = EARLIER([EmployeeID])
+	),
+	[Hours]
+)
+
+
+% Utilization = DIVIDE( [TotalBillableHours], [TotalHours], 0 )
+
+
+
+
+MEASURES
+---------
+Total Billable Hours = 
+SUMX(
+	FILTER(
+		'Hours',
+		'Hours'[Category] = "Billable"
+	),
+	'Hours'[Hours]
+)
+
+
+
+Total Hours =
+SUM(
+	'Calendar'[WorkHours]
+)
+
+% Utlization = DIVIDE( [Total Billable Hours], [Total Hours], 0)

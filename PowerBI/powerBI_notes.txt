@@ -201,3 +201,205 @@ Chart 1
         -> Go to the 3 dots (options) at the top or bottom of the chart, choose sort axis -> month
         -> Go to the same options sort axis -> sort ascending
         -> click Month column in Data pane, go to Column tools, sort by column -> MonthNum
+
+
+Table architecture:
+-------------------
+
+There are 3 tyepes of tables in power BI
+->  Fact table
+->  Dimension table
+->  Snowflake dimension table
+
+DAX: 
+------
+
+Two types of DAX expressions
+        1. Calculated columns (easy to create but not recommended every time)
+                -> uses row filter to create columns. 
+                -> Does row level calculations and creates a column
+        
+        2. Measures
+                -> Uses filter context
+                        - Visual
+                        - Slicer
+                        - filters pane
+
+Calculated Columns:
+-------------------
+
+Column = SUM( [Hours] ) -> not giving proper results
+
+Column2 = [Hours] / [TotalHours]
+
+Column3 = 
+        SUMX(
+            FILTER(
+                ALL( 'Hours' ),
+                [Category] = "Billable" && [EmployeeID] = EARLIER( [EmployeeID] )
+            ),
+            [Hours]    
+        )
+
+ALL() -> REMOVES ALL THE FILTERS FROM THE TABLE OR COLUMN : visual, slicer, filter
+
+Hours_test = SUM( 'Hours'[Hours] )
+
+Hours_test2 = SUMX( ALL( 'Hours' ),
+                'Hours' [Hours] )
+
+FILTER ( table, filter1, filter2, filter3, ... )
+
+filter1:
+[Category] = "Billable" && [EmployeeID] = EARLIER( [EmployeeID] )
+
+EARLIER() -> filter all the rows for the each item
+
+
+&& - and
+|| - or
+
+
+X functions:
+        - Iterating functions (Not all the functions that ends with X are iterating functions and all Iterating functions should not end with X)
+
+func_iterating(TABLE, expression)
+        - Executes the expression for each row of the table. 
+
+
+Column4 = 
+        SUMX(
+            FILTER(
+                ALL( 'Hours' ),
+                [EmployeeID] = EARLIER( [EmployeeID] )
+            ),
+            [Hours]    
+        )
+
+
+CALCULATE( expression, filter1, filter2, filter3, ... )
+        expression -> DAX (measure or calculated column for .)
+
+        - It combines all the filters using AND operator
+        - But if the filters are applied on different columns then we see the unexpected results. 
+
+FILTER( expression, filter1, filter2, filter3, ... )
+        - To create a virtual table
+
+
+Column5 = [Column3] / [Column4]
+
+Column5 = DEVIDE([Column3], [Column4], 0 )
+
+=> Create a new column in Budgets and Forcasts table:
+
+MonthYear = [Month] & "2017
+
+=> Create a similar column in Calendar table:
+
+MonthYear = LEFT( [Month],3 ) & [Year]
+
+=> Create a new intermediate table instead of Many to Many relation:
+
+monthYears = DISTINCT ( 'Calendar'[MonthYear] )
+
+
+
+Measures:
+----------
+
+Measure = 
+        SUMX(
+            FILTER(
+                'Hours',
+                'Hours'[Category] = "Billable"
+            ),
+            'Hours'[Hours]    
+        )
+
+
+SUMX, COUNTAX, MINX, MAXX, AVARAGEX, ....
+        -Iterators
+
+        = SUM ( [Hours] )
+
+Column = SUM( [Hours] )
+
+        = SUMX ( table, expression )
+
+        Iterates through each row of the 'table'
+        For each row it executes the 'expression'
+        it sums all the values that results from expression
+
+Column6 = SUMX ( 'Hours', [TotalHoursBilled] * 1.1) 
+
+
+Measure =
+SUMX(
+	FILTER(
+		'Hours',
+		'Hours'[Category] = "Billable"
+	),
+	'Hours'[Hours]
+)
+
+Rename Measure as TotalBillableHours
+
+Measure2 =
+SUMX(
+	'Hours',
+	'Hours'[Hours]
+)
+
+Measure2 = SUM ( 'Hours'[Hours] )
+
+PK -> reported total hours:     30
+
+
+WorkHours = IF( [IsWorkday] = 1, 8, 0 )
+WorkHours = IF( [IsWorkday], 8, 0 )
+
+Total Hours = SUM( 'Calendar'[Workhours] )
+
+% Utilization = DIVIDE( [Total Bilable hours], [Total Hours], 0)
+
+
+
+-----------------------
+=> Imported sales.csv to the powerbi
+
+Create 4 columns in the visual
+Column 1: Name
+Column 2: Total Sales
+Column 3: Grand Total Sales
+Column 4: Prcentage of Each Sales Person
+
+tbl_tsales = SUM( 'sales'[Sales] )
+tbl_gtsales = SUM( ALL( 'sales'[Sales] ) )
+tbl_pctsales = DIVIDE( [tbl_tsales], [tbl_gtsales], 0 )
+
+---------------
+=> Rename [Total hours] to [Total Hours by Employee]
+        Because the total hours is for each employee
+
+=> 
+Total Hours = 
+IF(
+        HASONEVALUE( People[Name] ),
+        [Total Hours by Employee],
+        SUMX(
+                SUMMARIZE(
+                        'People', People[Name],
+                        "_Hours", [Total Hours by Employee]
+                ),
+                [_Hours]
+        )
+)
+
+
+
+% Utilization = 
+VAR __utilization = 
+        DIVIDE( [Total Billable Hours], [Total Hours], 0)
+RETURN
+        __utilization + 0
